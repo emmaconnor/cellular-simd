@@ -14,6 +14,7 @@
 #endif
 
 
+// return the CPU time as double
 double get_time() {
     struct timespec t;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t);
@@ -34,6 +35,7 @@ int main(int argc, char **argv) {
         0, 3, 3, 4, 2, 3, 1, 2, 3, 3, 4, 3, 2
     };
 
+    // for displaying the results; not perfect but works
     char syms[5] = {' ', '.', '*', 'o', 'O'};
 
     uint8_t *grid, *gen;
@@ -49,22 +51,25 @@ int main(int argc, char **argv) {
     if (sscanf(argv[2], "%d", &ngens) != 1) usage();
     print = (argv[3][0] == 'y');
 
-
     if (width % 16) {
         fprintf(stderr, "width must be a multiple of 16!\n");
         exit(1);
     }
 
+    // allocate space for grid
     grid = calloc(ngens * (width+2), sizeof(uint8_t));
     gen = grid + 1;
+    // randomly initialize first generation
     for (i=0; i < width; i++) {
         gen[i] = rand() % 5;
     }
 
+    // run the CA, and time it 
     double start = get_time();
     do_ca(grid, rules, width, ngens);
     double end = get_time();
 
+    // display the results, if asked to
     if (print) {
         for (i=0; i < ngens; i++) {
             gen = grid + i*(width+2)+1;
@@ -75,6 +80,7 @@ int main(int argc, char **argv) {
         }
     }
 
+    // print out time
     printf("%lf\n", end-start);
 
     return 0;
